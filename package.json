@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@apidevtools/json-schema-ref-parser": "^9.0.5",
+    "@types/fs-extra": "^9.0.1",
     "@types/jest": "^26.0.9",
     "@types/lodash": "^4.14.159",
     "@types/node": "^14.0.27",
@@ -17,7 +19,8 @@
     "babel-register": "^6.26.0",
     "js-struct-compare": "^1.0.0",
     "js-yaml": "^3.14.0",
-    "swagger-diff": "^0.6.0",
+    "json-schema-diff": "^0.15.0",
+    "openapi-diff": "^0.23.0",
     "ts-jest": "^26.2.0",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"

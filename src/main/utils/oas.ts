@@ -13,7 +13,7 @@ enum pathItemObject {
   paramaters = 'paramaters'
 }
 
-enum operationObject{
+enum operationObject {
   description = 'description',
   parameters = 'parameters',
   requestBody = 'requestBody',
@@ -21,7 +21,26 @@ enum operationObject{
   security = 'security'
 }
 
-enum parameterObject{
+enum parameterObject {
   description = 'description',
   required = 'required'
+}
+
+enum SchemaRawProperties {
+  title = 'title',
+  multipleOf = 'multipleOf',
+  maximum = 'maximum',
+  exclusiveMaximum = 'exclusiveMaximum',
+  minimum = 'minimum',
+  exclusiveMinimum = 'exclusiveMinimum',
+  maxLength = 'maxLength',
+  minLength = 'minLength',
+  pattern = 'pattern',
+  maxItems = 'maxItems',
+  minItems = 'minItems',
+  uniqueItems = 'uniqueItems',
+  maxProperties = 'maxProperties',
+  minProperties = 'minProperties',
+  required = 'required',
+  enum = 'enum'
 }
