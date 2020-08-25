@@ -4,14 +4,12 @@ import * as  _ from "lodash";
 
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
-import { compareString } from "./basic_compare";
+import { compareString, compareTypes, pushChanges } from "./basic_compare";
 
 const public_merged = yaml.safeLoad(fs.readFileSync('C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/public-merged.yml'));
 const test_merged = yaml.safeLoad(fs.readFileSync('C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/test-merged.yml'));
 const test_one = yaml.safeLoad(fs.readFileSync('C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/test_one.yml'));
 const test_two = yaml.safeLoad(fs.readFileSync('C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/test_two.yml'));
-
-// console.log(public_merged.paths['/v1.0/xdr/workbench/workbenches/{workbenchId}']['get']['responses']['200']['content']['application/json']['schema']);
 
 $RefParser.dereference(public_merged, (err, schema) => {
   if (err) {
@@ -26,56 +24,73 @@ $RefParser.dereference(public_merged, (err, schema) => {
   }
 })
 
-compareOpenApi(public_merged, test_merged);
+let temp = compareOpenApi(public_merged, test_merged);
+console.log('add');
+console.log(temp.add);
+console.log('del');
+console.log(temp.del);
+console.log('change');
+console.log(temp.change);
+
+
 
 function compareOpenApi(left: any, right: any) {
   let add = [], del = [], change = [];
-  //compare paths
-  comparePaths('paths', left.paths, right.paths, [], add, del, change);
+  let keys = compareValues(Object.keys(left), Object.keys(right));
+  let sameKeys = keys.same;
 
+  for (let i = 0; i < sameKeys.length; i++) {
+    const element = sameKeys[i];
+    if (element == 'paths') {
+      //compare paths
+      comparePaths('paths', left[element], right[element], [], add, del, change);
+    }
+  }
+
+  return {
+    "add": add,
+    "del": del,
+    "change": change
+  }
 }
 
-/**
- * 
- * @param path 'paths'
- * @param left 
- * @param right 
- * @param ignore 
- * @param add 
- * @param del 
- * @param change 
- */
+
 function comparePaths(path: string,
   left: any, right: any,
   ignore: any[], add: any[], del: any[], change: any[]) {
   let keys = compareValues(Object.keys(left), Object.keys(right));
-  let addApi = keys.add;
-  let delApi = keys.del;
   let sameApi = keys.same;
 
-  //for
   for (let i = 0; i < sameApi.length; i++) {
-    compareMethods(path + sameApi[i],
-      left[sameApi[i]], right[sameApi[i]],
+    const element = sameApi[i];
+    compareMethods(path + element,
+      left[element], right[element],
       ignore, add, del, change);
+    //TODO summary description servers
   }
-  console.log(change);
+  pushChanges(path, keys.add, add);
+  pushChanges(path, keys.del, del);
 }
 
 function compareMethods(path: string,
   left: any, right: any,
   ignore: any[], add: any[], del: any[], change: any[]) {
   let keys = compareValues(Object.keys(left), Object.keys(right));
-  let addMethods = keys.add;
-  let delMethods = keys.del;
   let sameMethods = keys.same;
 
-  //compare parameters
   for (let i = 0; i < sameMethods.length; i++) {
-    //  console.log(left[sameMethods[i]]);
-    compareMethod(path + '/' + sameMethods[i], left[sameMethods[i]], right[sameMethods[i]],
-      ignore, add, del, change);
+    const element = sameMethods[i];
+    if (element == 'get' || element == 'put' || element == 'post' || element == 'delete' ||
+      element == 'options' || element == 'head' || element == 'patch' || element == 'trace') {
+      compareMethod(path + '/' + element, left[element], right[element],
+        ignore, add, del, change);
+    } else if (element == 'parameters') {
+      compareParameters(path + '/' + element, left[element], right[element], ignore, add, del, change);
+    }
   }
+
+  pushChanges(path, keys.add, add);
+  pushChanges(path, keys.del, del);
 }
 
 function compareMethod(path: string,
@@ -85,58 +100,34 @@ function compareMethod(path: string,
   let sameKeys = _.difference(keys.same, ignore);
   for (let i = 0; i < sameKeys.length; i++) {
     const element = sameKeys[i];
-    if (element == 'summary') {
-      compareString(path, left.summary, right.summary, change);
+    if (element == 'summary' || element == 'description') {
+      compareString(path + '/' + element, left[element], right[element], change);
     }
-    if (element == 'description') {
-      compareString(path, left.description, right.description, change);
+    else if (element == 'requestBody') {
+      compareRquestBody(path + '/' + element, left[element], right[element], ignore, add, del, change);
     }
-    // if (element == 'get' || element == 'put' ||
-    //   element == 'post' || element == 'delete' || element == 'options' ||
-    //   element == 'head' || element == 'patch' || element == 'trace') {
-    //   // compare operation object
-    //   compareOperationObject(path + '/' + element, left[element], right[element], ignore, add, del, change);
-    // }
-    if (element == 'requestBody') {
-      compareRquestBody(path + '/requestBody', left.requestBody, right.requestBody, ignore, add, del, change);
+    else if (element == 'parameters') {
+      compareParameters(path + '/' + element, left[element], right[element], ignore, add, del, change);
     }
-    if (element == 'parameters') {
-      compareParameters(path + '/parameters', left.parameters, right.parameters,
-        ignore, add, del, change);
+    else if (element == 'responses') {
+      compareResponses(path + '/' + element, left[element], right[element], ignore, add, del, change);
     }
   }
+
+  pushChanges(path, keys.add, add);
+  pushChanges(path, keys.del, del);
 }
 
-//TODO
-function compareOperationObject(path: string,
-  left: any, right: any,
-  ignore: any[], add: any[], del: any[], change: any[]) {
-  let keys = compareValues(Object.keys(left), Object.keys(right));
-  let sameKeys = _.difference(keys.same, ignore);
-  for (let i = 0; i < sameKeys.length; i++) {
-    const element = sameKeys[i];
-    //compare parameters
-    if (element == 'parameters') {
-      compareParameters(path + '/parameters', left.parameters, right.parameters, ignore, add, del, change);
-    }
-    //compare requestBody
-    if (element == 'requestBody') {
-      compareRquestBody(path + '/requestBody', left.requestBody, right.requestBody, ignore, add, del, change);
-    }
-    //compare responses
-    
-  }
-}
 
-// 比较每个请求method里面的parameter的变化情况
 function compareParameters(path: string,
   left: any, right: any,
   ignore: string[], add: any[], del: any[], change: any[]) {
-  // console.log(left);
   if (left == undefined && right != undefined) {
-    //TODO add
+    // add
+    pushChanges(path, right, add);
   } else if (left != undefined && right == undefined) {
-    //TODO del
+    // del
+    pushChanges(path, left, del);
   } else if (left != undefined && right != undefined) {
     let leftNames = [];
     let rightNames = [];
@@ -152,11 +143,8 @@ function compareParameters(path: string,
     }
 
     let compares = compareValues(leftNames, rightNames);
-    let sameCompares = compares.same;
-    // console.log(compares);
-
-    // 对于每一个same节点，需要去比较下一层的元素是否有变化
-    // 记录same节点的index
+    pushChanges(path, compares.add, add);
+    pushChanges(path, compares.del, del);
     let leftMap = new Map<string, number>();
     for (let i = 0; i < left.length; i++) {
       if (left[i].hasOwnProperty("name")) {
@@ -188,67 +176,62 @@ function compareParameter(path: string,
   left: any, right: any,
   ignore: string[], add: any[], del: any[], change: any[]) {
   let keys = compareValues(Object.keys(left), Object.keys(right));
-  let sameKeys = keys.same;
+  let sameKeys = _.difference(keys.same, ignore);
   // console.log(sameKeys);
   for (let i = 0; i < sameKeys.length; i++) {
     const element = sameKeys[i];
-    // console.log(sameKeys[i]);
-
-    if (element == 'in' && !_.includes(ignore, 'in')) {
-      compareString(path, left.in, right.in, change);
+    if (element == 'in' || element == 'description' || element == 'required'
+      || element == 'deprecated' || element == 'allowEmptyValue') {
+      compareString(path + '/' + element, left[element], right[element], change);
     }
-    if (element == 'description' && !_.includes(ignore, 'description')) {
-      compareString(path, left.description, right.description, change);
-    }
-    if (element == 'required' && !_.includes(ignore, 'required')) {
-      //TODO compare boolean
-      compareString(path, left.required, right.required, change);
-    }
-    if (element == 'deprecated' && !_.includes(ignore, 'deprecated')) {
-      //TODO compare boolean
-      compareString(path, left.deprecated, right.deprecated, change);
-    }
-    if (element == 'allowEmptyValue' && !_.includes(ignore, 'allowEmptyValue')) {
-      //TODO compare boolean
-      compareString(path, left.allowEmptyValue, right.allowEmptyValue, change);
-    }
-    if (element == 'schema' && !_.includes(ignore, 'schema')) {
-      //TODO compare schema
+    else if (element == 'schema') {
+      compareSchema(path + '/' + element, left[element], right[element], ignore, add, del, change);
     }
   }
+
+  pushChanges(path, keys.add, add);
+  pushChanges(path, keys.del, del);
 }
 
 function compareRquestBody(path: string,
   left: any, right: any,
   ignore: any[], add: any[], del: any[], change: any[]) {
   let keys = compareValues(Object.keys(left), Object.keys(right));
-  let sameKeys = keys.same;
+  let sameKeys = _.difference(keys.same, ignore);
 
   for (let i = 0; i < sameKeys.length; i++) {
     const element = sameKeys[i];
-    if (element == 'description' && !_.includes(ignore, 'description')) {
-      compareString(path, left.description, right.description, change);
+    if (element == 'description' || element == 'required') {
+      compareString(path + '/' + element, left[element], right[element], change);
     }
-    if (element == 'required' && !_.includes(ignore, 'required')) {
-      compareString(path, left.required, right.required, change);
-    }
-    if (element == 'content' && !_.includes(ignore, 'content')) {
-      //TODO compare contents
+    if (element == 'content') {
+      //compare contents
+      compareContents(path + '/' + element, left[element], right[element], ignore, add, del, change);
     }
   }
+
+  pushChanges(path, keys.add, add);
+  pushChanges(path, keys.del, del);
 }
 
-
-//TODO
 function compareResponses(path: string,
   left: any, right: any,
   ignore: any[], add: any[], del: any[], change: any[]) {
+  // compare ResponseObject
   let keys = compareValues(Object.keys(left), Object.keys(right));
-  //TODO compare ResponseObject
+  let sameKeys = _.difference(keys.same, ignore);
+
+  for (let i = 0; i < sameKeys.length; i++) {
+    const element = sameKeys[i];
+    compareResponse(path + '/' + element, left[element], right[element],
+      ignore, add, del, change);
+  }
+
+  pushChanges(path, keys.add, add);
+  pushChanges(path, keys.del, del);
 }
 
-// TODO
-function compareContents(path: string,
+function compareContent(path: string,
   left: any, right: any,
   ignore: any[], add: any[], del: any[], change: any[]) {
   let keys = compareValues(Object.keys(left), Object.keys(right));
@@ -257,21 +240,25 @@ function compareContents(path: string,
   for (let i = 0; i < sameKeys.length; i++) {
     const element = sameKeys[i];
     if (element == 'schema') {
-      //TODO compare schema
+      //compare schema
+      compareSchema(path + '/' + element, left[element], right[element], ignore, add, del, change);
     }
-    if (element == 'example') {
+    else if (element == 'example') {
       //TODO compare example
     }
-    if (element == 'examples') {
+    else if (element == 'examples') {
       //TODO compare examples
     }
-    if (element == 'encoding') {
+    else if (element == 'encoding') {
       //TODO compare encoding
     }
   }
+
+  pushChanges(path, keys.add, add);
+  pushChanges(path, keys.del, del);
 }
 
-//TODO
+
 function compareSchema(path: string,
   left: any, right: any,
   ignore: any[], add: any[], del: any[], change: any[]) {
@@ -280,29 +267,80 @@ function compareSchema(path: string,
   for (let i = 0; i < sameKeys.length; i++) {
     const element = sameKeys[i];
     if (element == 'type') {
-      compareString(path, left.type, right.type, change);
+      compareTypes(path + '/' + element, left.type, right.type, add, del, change);
     }
-    if (element == 'oneOf' || element == 'allOf' || element == 'anyOf' || element == 'not') {
-      //TODO compare Schema Arrays
-      //比较oneOf allOf not类型
-      //一定是数组？ 如果是数组，位置变化如何比较？
+    else if (element == 'oneOf' || element == 'allOf' || element == 'anyOf' || element == 'not') {
+      //TODO 万一有一边的schma为空？
+      compareSchemas(path + '/' + element, left[element], right[element], ignore, add, del, change);
     }
-    if (element == 'properties') {
-      //compare properties
+    else if (element == 'properties') {
       compareProperties(path + '/properties',
         left.properties, right.properties, ignore, add, del, change);
     }
-    if (element == 'description') {
-      compareString(path, left.description, right.description, change);
+    else if (element == 'description') {
+      compareString(path + '/' + element, left[element], right[element], change);
     }
+  }
+
+  pushChanges(path, keys.add, add);
+  pushChanges(path, keys.del, del);
+}
+
+function compareSchemas(path: string,
+  left: any, right: any,
+  ignore: any[], add: any[], del: any[], change: any[]) {
+  // 如果oneof/allof/anyof/not允许不是数组的话，这么比较会出问题
+  // 万一有一边的schma为空？
+  if (_.isArray(left) && _.isArray(right)) {
+    let minLength = Math.min(left.length, right.length);
+    for (let i = 0; i < minLength; i++) {
+      compareSchema(path, left[i], right[i], ignore, add, del, change);
+    }
+  } else if (_.isObject(left) && _.isObject(right)) {
+    compareSchema(path, left, right, ignore, add, del, change);
+  } else if (_.isObject(left) && _.isArray(right)) {
+    compareSchema(path, left, right[0], ignore, add, del, change);
+  } else if (_.isArray(left) && _.isArray(right)) {
+    compareSchema(path, left[0], right, ignore, add, del, change);
   }
 }
 
-//TODO
-function compareJsonSchemaArrays(path: string,
+function compareResponse(path: string,
   left: any, right: any,
   ignore: any[], add: any[], del: any[], change: any[]) {
-  //TODO
+  let keys = compareValues(Object.keys(left), Object.keys(right));
+  let sameKeys = _.difference(keys.same, ignore);
+  for (let i = 0; i < sameKeys.length; i++) {
+    const element = sameKeys[i];
+    if (element == 'description') {
+      compareString(path + '/description', left.description, right.description, change);
+    }
+    else if (element == 'headers') {
+      //compare headers
+      compareHeaders(path + '/' + element, left[element], right[element], ignore, add, del, change);
+    }
+    else if (element == 'content') {
+      //compare contents
+      compareContents(path + '/content', left.content, right.content, ignore, add, del, change);
+    }
+  }
+
+  pushChanges(path, keys.add, add);
+  pushChanges(path, keys.del, del);
+}
+
+function compareContents(path: string,
+  left: any, right: any,
+  ignore: any[], add: any[], del: any[], change: any[]) {
+  let keys = compareValues(Object.keys(left), Object.keys(right));
+  let sameKeys = _.difference(keys.same, ignore);
+  for (let i = 0; i < sameKeys.length; i++) {
+    compareContent(path + '/' + sameKeys[i], left[sameKeys[i]], right[sameKeys[i]],
+      ignore, add, del, change);
+  }
+
+  pushChanges(path, keys.add, add);
+  pushChanges(path, keys.del, del);
 }
 
 function compareProperties(path: string,
@@ -314,8 +352,11 @@ function compareProperties(path: string,
 
   for (let i = 0; i < sameKeys.length; i++) {
     const element = sameKeys[i];
-    compareProperty(path, left, right, ignore, add, del, change);
+    compareProperty(path, left[element], right[element], ignore, add, del, change);
   }
+
+  pushChanges(path, keys.add, add);
+  pushChanges(path, keys.del, del);
 
 }
 
@@ -327,14 +368,13 @@ function compareProperty(path: string,
 
   for (let i = 0; i < sameKeys.length; i++) {
     const element = sameKeys[i];
-    //FIXME 暂时只比较type change，忽略其它
+    // 暂时只比较type change，忽略其它
     if (element == 'type') {
-      compareString(path, left.type, right.type, change);
+      compareTypes(path + '/' + element, left[element], right[element], add, del, change);
     }
     if (element == 'properties') {
-      compareProperties(path + '/' + sameKeys[i],
-        left[sameKeys[i]].properties, right[sameKeys[i]].properties,
-        ignore, add, del, change);
+      // 不需要加properties，把所有结果放在同一层
+      compareProperties(path, left[element], right[element], ignore, add, del, change);
     }
   }
 
@@ -345,19 +385,29 @@ function compareProperty(path: string,
   if (_.includes(keys.del, 'properties')) {
     dfsProperties(path, left.properties, del);
   }
+
+  pushChanges(path, _.difference(keys.add, 'properties'), add);
+  pushChanges(path, _.difference(keys.del, 'properties'), del);
 }
 
 function dfsProperties(path: string, jsonProper: any, list: any[]) {
   let keys = Object.keys(jsonProper);
   let filterKeys = _.difference(keys, 'properties');
-  for (let i = 0; i < filterKeys.length; i++) {
-    let temp = {
-      "path": path,
-      "value": filterKeys[i]
-    }
-    list.push(temp);
-  }
+  pushChanges(path, filterKeys, list);
   if (_.includes(keys, 'properties')) {
     dfsProperties(path, jsonProper.properties, list);
   }
+}
+
+function compareHeaders(path: string,
+  left: any, right: any,
+  ignore: any[], add: any[], del: any[], change: any[]) {
+  let keys = compareValues(Object.keys(left), Object.keys(right));
+  let sameKeys = _.difference(keys.same, ignore);
+  for (let i = 0; i < sameKeys.length; i++) {
+    const element = sameKeys[i];
+    compareParameter(path + '/' + element, left[element], right[element], ignore, add, del, change);
+  }
+  pushChanges(path, keys.add, add);
+  pushChanges(path, keys.del, del);
 }

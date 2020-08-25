@@ -11,21 +11,3 @@ export function compareValues(left: any[], right: any[]) {
     "same":same
   }  
 }
-
-export function compareValue(left: any, right: any) {
-  
-
-  if (!_.isEqual(left, right)) {
-    return {
-      "change": true,
-      "left": left,
-      "right": right
-    }
-  } else {
-    return {
-      "change": false,
-      "left": left,
-      "right": right
-    }
-  }
-}
