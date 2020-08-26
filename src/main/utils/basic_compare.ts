@@ -1,5 +1,4 @@
 import * as _ from "lodash";
-import { Change } from "./change";
 
 export function compareString(path: string,
   left: string, right: string, change: any[]) {
@@ -15,17 +14,14 @@ export function compareString(path: string,
   }
 }
 
-function compareValue(path: string,
-  left: any, right: any,
-  add: any[], del: any[], change: any[]) {
-}
-
 function compareArray(path: string,
   left: any, right: any,
   add: any[], del: any[], change: any[]) {
   let addValues = _.difference(right, left);
   let delValues = _.difference(left, right);
-  //TODO add del
+  // add del
+  pushChanges(path, addValues, add);
+  pushChanges(path, delValues, del);
 }
 
 export function compareTypes(path: string,
@@ -34,9 +30,15 @@ export function compareTypes(path: string,
   if (_.isArray(left) && _.isArray(right)) {
     compareArray(path, left, right, add, del, change);
   } else if (_.isArray(left) && !_.isArray(right)) {
-    //TODO
+    let delValues = _.difference(left, [right]);
+    let addValues = _.difference([right], left);
+    pushChanges(path, delValues, del);
+    pushChanges(path, addValues, add);
   } else if (!_.isArray(left) && _.isArray(right)) {
-    //TODO
+    let delValues = _.difference([left], right);
+    let addValues = _.difference(right, [left]);
+    pushChanges(path, delValues, del);
+    pushChanges(path, addValues, add);
   } else {
     compareString(path, left, right, change);
   }
@@ -50,4 +52,16 @@ export function pushChanges(path: string, changes: any, list: any[]) {
     }
     list.push(change);
   }
+}
+
+export function compareValues(left: any[], right: any[]) {
+  let add = _.difference(right, left);
+  let del = _.difference(left, right);
+  let same = _.intersection(left, right);
+
+  return {
+    "add": add,
+    "del": del,
+    "same":same
+  }  
 }
