@@ -1,0 +1,135 @@
+{
+	"add": [
+		{
+			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/responses/200/content/application/json/schema/oneOf/properties/info/properties/foo/properties/ker/properties",
+			"change": {
+				"key": "must"
+			}
+		},
+		{
+			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/responses/200/content/application/json/schema/oneOf/properties/info/properties/foo/properties",
+			"change": {
+				"key": "bar",
+				"type": "string"
+			}
+		},
+		{
+			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/responses/200/content/application/json/schema/oneOf/properties/info/properties/foo/properties",
+			"change": {
+				"key": "ker",
+				"type": "object"
+			}
+		},
+		{
+			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/responses/200/content/application/json/schema/oneOf/properties/info/properties",
+			"change": {
+				"key": "foo",
+				"type": "object"
+			}
+		},
+		{
+			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}",
+			"method": "put",
+			"location": "/responses/200/content/application/json/schema/properties/info/properties",
+			"change": {
+				"key": "code",
+				"type": "integer"
+			}
+		},
+		{
+			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}",
+			"method": "put",
+			"location": "/responses/200/content/application/json/schema/properties/info/properties",
+			"change": {
+				"key": "msg",
+				"type": "string"
+			}
+		},
+		{
+			"path": "/beta/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/responses/200/content/application/json/schema/oneOf/properties/info/properties/foo/properties/ker/properties",
+			"change": {
+				"key": "must"
+			}
+		},
+		{
+			"path": "/beta/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/responses/200/content/application/json/schema/oneOf/properties/info/properties/foo/properties",
+			"change": {
+				"key": "bar",
+				"type": "string"
+			}
+		},
+		{
+			"path": "/beta/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/responses/200/content/application/json/schema/oneOf/properties/info/properties/foo/properties",
+			"change": {
+				"key": "ker",
+				"type": "object"
+			}
+		},
+		{
+			"path": "/beta/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/responses/200/content/application/json/schema/oneOf/properties/info/properties",
+			"change": {
+				"key": "foo",
+				"type": "object"
+			}
+		},
+		{
+			"path": "/beta/xdr/workbench/workbenches/{workbenchId}",
+			"method": "put",
+			"location": "/responses/200/content/application/json/schema/properties/info/properties",
+			"change": {
+				"key": "code",
+				"type": "integer"
+			}
+		},
+		{
+			"path": "/beta/xdr/workbench/workbenches/{workbenchId}",
+			"method": "put",
+			"location": "/responses/200/content/application/json/schema/properties/info/properties",
+			"change": {
+				"key": "msg",
+				"type": "string"
+			}
+		}
+	],
+	"del": [],
+	"change": [
+		{
+			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}",
+			"method": "put",
+			"location": "/responses/200/content/application/json/schema/properties",
+			"change": {
+				"key": "info",
+				"property": "type",
+				"from": "object",
+				"to": "string"
+			}
+		},
+		{
+			"path": "/beta/xdr/workbench/workbenches/{workbenchId}",
+			"method": "put",
+			"location": "/responses/200/content/application/json/schema/properties",
+			"change": {
+				"key": "info",
+				"property": "type",
+				"from": "object",
+				"to": "string"
+			}
+		}
+	]
+}

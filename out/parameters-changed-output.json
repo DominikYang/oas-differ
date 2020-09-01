@@ -1,0 +1,67 @@
+{
+	"add": [
+		{
+			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/parameters",
+			"change": {
+				"value": "parameteradd"
+			}
+		},
+		{
+			"path": "/beta/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/parameters",
+			"change": {
+				"value": "parameteradd"
+			}
+		}
+	],
+	"del": [],
+	"change": [
+		{
+			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/parameters",
+			"change": {
+				"key": "workbenchId",
+				"property": "in",
+				"from": "path",
+				"to": "header"
+			}
+		},
+		{
+			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/parameters/schema",
+			"change": {
+				"key": "schema",
+				"property": "type",
+				"from": "string",
+				"to": "number"
+			}
+		},
+		{
+			"path": "/beta/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/parameters",
+			"change": {
+				"key": "workbenchId",
+				"property": "in",
+				"from": "path",
+				"to": "header"
+			}
+		},
+		{
+			"path": "/beta/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/parameters/schema",
+			"change": {
+				"key": "schema",
+				"property": "type",
+				"from": "string",
+				"to": "number"
+			}
+		}
+	]
+}

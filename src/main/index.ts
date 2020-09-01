@@ -2,8 +2,9 @@ import * as $RefParser from "@apidevtools/json-schema-ref-parser";
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import { compareOpenApi } from "./utils/open_api_compare";
-
-export async function oasDiff(leftPath: string, rightPath: string) {
+import * as path from 'path';
+const output = path.resolve(`$(__dirname)`, '../out/');
+export async function oasDiff(leftPath: string, rightPath: string, outputPath: string = output, name: string = 'out.json') {
   const rawLeft = yaml.safeLoad(fs.readFileSync(leftPath));
   const rawRight = yaml.safeLoad(fs.readFileSync(rightPath));
   let left, right;
@@ -16,26 +17,16 @@ export async function oasDiff(leftPath: string, rightPath: string) {
     console.error(err);
   }
   let res = compareOpenApi(left, right);
-  return res;
+  fs.writeFileSync(outputPath + '\\' + name, JSON.stringify(res, null, "\t"));
 }
 
 oasDiff('C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/raw.yml',
-  'C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/api-changed.yml').then(res => {
-    console.log(res);
-  })
-
-
-// oasDiff('C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/raw.yml',
-//   'C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/oneOf-test.yml').then(res => {
-//     console.log(res);
-//   })
-
-// oasDiff('C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/raw.yml',
-//   'C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/properties-changed.yml').then(res => {
-//     console.log(res);
-//   })
-
-// oasDiff('C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/raw.yml',
-//   'C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/parameters-changed.yml').then(res => {
-//     console.log(res);
-//   })
+  'C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/oneOf-test.yml', output, 'oneOf-test-output.json');
+oasDiff('C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/raw.yml',
+  'C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/api-changed.yml', output, 'api-changed-output.json');
+oasDiff('C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/raw.yml',
+  'C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/parameters-changed.yml', output, 'parameters-changed-output.json');
+oasDiff('C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/raw.yml',
+  'C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/properties-changed.yml', output, 'properties-changed-output.json');
+oasDiff('C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/raw.yml',
+  'C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/schema-changed.yml', output, 'schema-changed-output.json');

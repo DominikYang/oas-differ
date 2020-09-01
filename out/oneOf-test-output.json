@@ -1,0 +1,24 @@
+{
+	"add": [
+		{
+			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/responses/200/content/application/json/schema/oneOf/properties/data/properties/items/properties/oneOf",
+			"change": {
+				"key": "oneOf",
+				"type": "object"
+			}
+		},
+		{
+			"path": "/beta/xdr/workbench/workbenches/{workbenchId}",
+			"method": "get",
+			"location": "/responses/200/content/application/json/schema/oneOf/properties/data/properties/items/properties/oneOf",
+			"change": {
+				"key": "oneOf",
+				"type": "object"
+			}
+		}
+	],
+	"del": [],
+	"change": []
+}

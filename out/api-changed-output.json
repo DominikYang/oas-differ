@@ -1,0 +1,23 @@
+{
+	"add": [
+		{
+			"path": "",
+			"method": "",
+			"location": "",
+			"change": {
+				"value": "/beta/xdr/workbench/workbenches/{workbenchId1}"
+			}
+		}
+	],
+	"del": [
+		{
+			"path": "",
+			"method": "",
+			"location": "",
+			"change": {
+				"value": "/beta/xdr/portal/remoteSupport"
+			}
+		}
+	],
+	"change": []
+}
