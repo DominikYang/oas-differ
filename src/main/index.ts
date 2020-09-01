@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import { compareOpenApi } from "./utils/open_api_compare";
 import * as path from 'path';
-const output = path.resolve(`$(__dirname)`, '../out/');
+export const output = path.resolve(`$(__dirname)`, '../out/');
 export async function oasDiff(leftPath: string, rightPath: string, outputPath: string = output, name: string = 'out.json') {
   const rawLeft = yaml.safeLoad(fs.readFileSync(leftPath));
   const rawRight = yaml.safeLoad(fs.readFileSync(rightPath));
