@@ -1,10 +1,10 @@
 import * as $RefParser from "@apidevtools/json-schema-ref-parser";
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import { compareOpenApi } from "./utils/open_api_compare";
 import * as path from 'path';
-export const output = path.resolve(`$(__dirname)`, '../out/');
-export async function oasDiff(leftPath: string, rightPath: string, outputPath: string = output, name: string = 'out.json') {
+export const output = path.resolve(`$(__dirname)`, '../outDir/');
+export async function oasDiff(leftPath: string, rightPath: string, outputPath: string = output, name: string = 'output.json') {
   const rawLeft = yaml.safeLoad(fs.readFileSync(leftPath));
   const rawRight = yaml.safeLoad(fs.readFileSync(rightPath));
   let left, right;
@@ -17,7 +17,8 @@ export async function oasDiff(leftPath: string, rightPath: string, outputPath: s
     console.error(err);
   }
   let res = compareOpenApi(left, right);
-  fs.writeFileSync(outputPath + '\\' + name, JSON.stringify(res, null, "\t"));
+  await fs.outputFile(outputPath + '\\' + name, JSON.stringify(res, null, "\t"));
+  // fs.writeFileSync(outputPath + '\\' + name, JSON.stringify(res, null, "\t"));
 }
 
 oasDiff('C:/WorkSpace/code/frontend/swagger-differ-compare/src/resources/raw.yml',
