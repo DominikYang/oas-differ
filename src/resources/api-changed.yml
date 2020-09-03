@@ -815,7 +815,7 @@ x-tagGroups:
     tags:
       - Splunk
 paths:
-  '/v1.0/xdr/workbench/workbenches/{workbenchId}':
+  '/v1.0/xdr/workbench/workbenches/{workbenchId}/{addparameter}':
     get: &ref_0
       summary: Get alert details
       description: Retrieves information about the specified alert
@@ -824,6 +824,13 @@ paths:
       parameters:
         - name: workbenchId
           description: workbench id
+          example: WB-14-20190709-0003
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: addparameter
+          description: addparameter
           example: WB-14-20190709-0003
           in: path
           required: true
@@ -1053,10 +1060,7 @@ paths:
                           code:
                             type: string
                             example: ''
-  '/beta/xdr/workbench/workbenches/{workbenchId}':
-    get: *ref_0
-    put: *ref_1
-  '/beta/xdr/workbench/workbenches/{workbenchId1}':
+  '/beta/xdr/workbench/workbenches/{workbenchId}/{addparameter}':
     get: *ref_0
     put: *ref_1
   /beta/xdr/workbench/workbenches/history:

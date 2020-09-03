@@ -1,0 +1,31 @@
+{
+	"add": [
+		{
+			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId2}",
+			"method": "get",
+			"location": "/parameters",
+			"change": {
+				"key": "workbenchId2"
+			}
+		},
+		{
+			"path": "",
+			"method": "",
+			"location": "",
+			"change": {
+				"key": "/v1.0/xdr/workbench/{email}/workbenches/{workbenchId2}"
+			}
+		}
+	],
+	"del": [
+		{
+			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId2}",
+			"method": "get",
+			"location": "/parameters",
+			"change": {
+				"key": "workbenchId"
+			}
+		}
+	],
+	"change": []
+}

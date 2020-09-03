@@ -24,8 +24,8 @@ function compareArray(path: string, method: string = '', location: string, key: 
   let addValues = _.difference(right, left);
   let delValues = _.difference(left, right);
   // add del
-  pushChanges(path, method, location, key, addValues, add);
-  pushChanges(path, method, location, key, delValues, del);
+  pushValueChanges(path, method, location, key, addValues, add);
+  pushValueChanges(path, method, location, key, delValues, del);
 }
 
 export function compareArrayString(path: string, location: string, key: string, proterty: string,
@@ -36,19 +36,47 @@ export function compareArrayString(path: string, location: string, key: string, 
   } else if (_.isArray(left) && !_.isArray(right)) {
     let delValues = _.difference(left, [right]);
     let addValues = _.difference([right], left);
-    pushChanges(path, method, location, proterty, delValues, del);
-    pushChanges(path, method, location, proterty, addValues, add);
+    pushValueChanges(path, method, location, proterty, delValues, del);
+    pushValueChanges(path, method, location, proterty, addValues, add);
   } else if (!_.isArray(left) && _.isArray(right)) {
     let delValues = _.difference([left], right);
     let addValues = _.difference(right, [left]);
-    pushChanges(path, method, location, proterty, delValues, del);
-    pushChanges(path, method, location, proterty, addValues, add);
+    pushValueChanges(path, method, location, proterty, delValues, del);
+    pushValueChanges(path, method, location, proterty, addValues, add);
   } else {
     compareString(path, location, key, proterty, left, right, change, method);
   }
 }
 
 export function pushChanges(path: string, method: string = '', location: string, key: string,
+  changes: any, list: any[]) {
+  if (_.isString(changes)) {
+    let change = {
+      "path": path,
+      "method": method,
+      "location": location,
+      "change": {
+        "key": changes
+      }
+    }
+    list.push(change);
+  } else if (_.isArray(changes) && changes.length != 0) {
+    for (let i = 0; i < changes.length; i++) {
+      const element = changes[i];
+      let change = {
+        "path": path,
+        "method": method,
+        "location": location,
+        "change": {
+          "key": element
+        }
+      }
+      list.push(change);
+    }
+  }
+}
+
+export function pushValueChanges(path: string, method: string = '', location: string, key: string,
   changes: any, list: any[]) {
   if (_.isString(changes)) {
     let change = {
@@ -124,4 +152,60 @@ export function pushPropertyChange(path: string, method: string, location: strin
       "type": type
     }
   }
+}
+
+/**
+ * customize response for parameters
+ */
+export function pushChangesWithType(path: string, method: string = '', location: string,type:string,
+  changes: any, list: any[]) {
+  if (_.isString(changes)) {
+    let change = {
+      "path": path,
+      "method": method,
+      "location": location,
+      "change": {
+        "key": changes,
+        "type":type
+      }
+    }
+    list.push(change);
+  } else if (_.isArray(changes) && changes.length != 0) {
+    for (let i = 0; i < changes.length; i++) {
+      const element = changes[i];
+      let change = {
+        "path": path,
+        "method": method,
+        "location": location,
+        "change": {
+          "key": element,
+          "type":type
+        }
+      }
+      list.push(change);
+    }
+  }
+}
+
+/**
+ * remove api's paramaters
+ * the parameter which in the path will be replaced by '$$',
+ * at the end of the path will be removed
+ * before: /hello/test/code/{id}/name/{email}
+ * after: /hello/test/code/$$/name
+ * @param api 
+ */
+export function removeParameters(api: string) {
+  const matcher = new RegExp('\{.*?\}');
+  let oldStr = undefined;
+  let newStr = api;
+
+  while (oldStr != newStr) {
+    oldStr = newStr;
+    newStr = newStr.replace(matcher, '$$$$');
+    while (newStr.endsWith('/$$')) {
+      newStr = newStr.substring(0, newStr.length - 3);
+    }
+  }
+  return oldStr;
 }

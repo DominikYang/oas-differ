@@ -5,7 +5,8 @@
 			"method": "get",
 			"location": "/parameters",
 			"change": {
-				"value": "parameteradd"
+				"key": "parameteradd",
+				"type": "string"
 			}
 		},
 		{
@@ -13,7 +14,8 @@
 			"method": "get",
 			"location": "/parameters",
 			"change": {
-				"value": "parameteradd"
+				"key": "parameteradd",
+				"type": "string"
 			}
 		}
 	],
@@ -35,7 +37,7 @@
 			"method": "get",
 			"location": "/parameters/schema",
 			"change": {
-				"key": "schema",
+				"key": "workbenchId",
 				"property": "type",
 				"from": "string",
 				"to": "number"
@@ -57,7 +59,7 @@
 			"method": "get",
 			"location": "/parameters/schema",
 			"change": {
-				"key": "schema",
+				"key": "workbenchId",
 				"property": "type",
 				"from": "string",
 				"to": "number"

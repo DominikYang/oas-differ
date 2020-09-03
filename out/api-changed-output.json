@@ -1,11 +1,21 @@
 {
 	"add": [
 		{
-			"path": "",
-			"method": "",
-			"location": "",
+			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}/{addparameter}",
+			"method": "get",
+			"location": "/parameters",
 			"change": {
-				"value": "/beta/xdr/workbench/workbenches/{workbenchId1}"
+				"key": "addparameter",
+				"type": "string"
+			}
+		},
+		{
+			"path": "/beta/xdr/workbench/workbenches/{workbenchId}/{addparameter}",
+			"method": "get",
+			"location": "/parameters",
+			"change": {
+				"key": "addparameter",
+				"type": "string"
 			}
 		}
 	],
@@ -15,7 +25,7 @@
 			"method": "",
 			"location": "",
 			"change": {
-				"value": "/beta/xdr/portal/remoteSupport"
+				"key": "/beta/xdr/portal/remoteSupport"
 			}
 		}
 	],

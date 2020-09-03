@@ -1,8 +1,9 @@
 import * as  _ from "lodash";
-import { compareString, compareArrayString, pushChanges, compareValues, pushPropertyChanges, pushPropertyChange } from "./basic_compare";
+import { compareString, compareArrayString, pushChanges, compareValues, pushPropertyChanges, pushPropertyChange, removeParameters, pushChangesWithType } from "./basic_compare";
 import { operationObjectIgnore, parameterObjectIgnore, mediaTypeObjectIgnore, pathItemObjectIgnore } from "./ignore";
 
-
+let leftApiMap = new Map<string, string>();
+let rightApiMap = new Map<string, string>();
 
 
 export function compareOpenApi(left: any, right: any) {
@@ -28,17 +29,44 @@ export function compareOpenApi(left: any, right: any) {
 function comparePaths(path: string,
   left: any, right: any,
   ignore: any[], add: any[], del: any[], change: any[]) {
-  let keys = compareValues(Object.keys(left), Object.keys(right));
+  let rawLeftKeys = Object.keys(left);
+  let rawRightKeys = Object.keys(right);
+  let leftKeys = new Array(); let rightKeys = new Array();
+  for (let i = 0; i < rawLeftKeys.length; i++) {
+    const element = rawLeftKeys[i];
+    let temp = removeParameters(element);
+    leftApiMap.set(temp, element);
+    leftKeys.push(temp);
+  }
+  for (let i = 0; i < rawRightKeys.length; i++) {
+    const element = rawRightKeys[i];
+    let temp = removeParameters(element);
+    rightApiMap.set(temp, element);
+    rightKeys.push(temp);
+  }
+  let keys = compareValues(leftKeys, rightKeys);
   let sameApi = keys.same;
 
   for (let i = 0; i < sameApi.length; i++) {
     const element = sameApi[i];
-    compareMethods(path + element,
-      left[element], right[element],
+    compareMethods(path + rightApiMap.get(element),
+      left[leftApiMap.get(element)], right[rightApiMap.get(element)],
       pathItemObjectIgnore, add, del, change);
   }
-  pushChanges(path, '', '', 'paths', keys.add, add);
-  pushChanges(path, '', '', 'paths', keys.del, del);
+  //FIXME
+  let addKeys = new Array();
+  let delKeys = new Array();
+  for (let i = 0; i < keys.add.length; i++) {
+    const element = keys.add[i];
+    addKeys.push(rightApiMap.get(element));
+  }
+
+  for (let i = 0; i < keys.del.length; i++) {
+    const element = keys.del[i];
+    delKeys.push(leftApiMap.get(element));
+  }
+  pushChanges(path, '', '', 'paths', addKeys, add);
+  pushChanges(path, '', '', 'paths', delKeys, del);
 }
 
 function compareMethods(path: string,
@@ -96,54 +124,73 @@ function compareMethod(path: string, method: string, location: string, key: stri
 function compareParameters(path: string, method: string, location: string,
   left: any, right: any,
   ignore: string[], add: any[], del: any[], change: any[]) {
-  if (left == undefined && right != undefined) {
-    // add
-    pushChanges(path, method, location, 'parameters', right, add);
-  } else if (left != undefined && right == undefined) {
-    // del
-    pushChanges(path, method, location, 'parameters', left, del);
-  } else if (left != undefined && right != undefined) {
-    let leftNames = [];
-    let rightNames = [];
-    for (let i = 0; i < left.length; i++) {
-      if (left[i].hasOwnProperty("name")) {
-        leftNames.push(left[i].name);
-      }
-    }
-    for (let i = 0; i < right.length; i++) {
-      if (right[i].hasOwnProperty("name")) {
-        rightNames.push(right[i].name);
-      }
-    }
-
-    let compares = compareValues(leftNames, rightNames);
-    pushChanges(path, method, location, 'parameters', compares.add, add);
-    pushChanges(path, method, location, 'parameters', compares.del, del);
-    let leftMap = new Map<string, number>();
-    for (let i = 0; i < left.length; i++) {
-      if (left[i].hasOwnProperty("name")) {
-        if (_.includes(compares.same, left[i].name)) {
-          leftMap.set(left[i].name, i);
-        }
-      }
-    }
-
-    let rightMap = new Map<string, number>();
-    for (let i = 0; i < right.length; i++) {
-      if (right[i].hasOwnProperty("name")) {
-        if (_.includes(compares.same, right[i].name)) {
-          rightMap.set(right[i].name, i);
-        }
-      }
-    }
-
-    for (let i = 0; i < compares.same.length; i++) {
-      const element = compares.same[i];
-      compareParameter(path, method, location, element,
-        left[leftMap.get(element)], right[rightMap.get(element)],
-        ignore, add, del, change);
+  let leftNames = [];
+  let rightNames = [];
+  for (let i = 0; i < left.length; i++) {
+    if (left[i].hasOwnProperty("name")) {
+      leftNames.push(left[i].name);
     }
   }
+  for (let i = 0; i < right.length; i++) {
+    if (right[i].hasOwnProperty("name")) {
+      rightNames.push(right[i].name);
+    }
+  }
+
+  let compares = compareValues(leftNames, rightNames);
+  let delMap = new Map<string, number>();
+  let leftMap = new Map<string, number>();
+  for (let i = 0; i < left.length; i++) {
+    if (left[i].hasOwnProperty("name")) {
+      if (_.includes(compares.same, left[i].name)) {
+        leftMap.set(left[i].name, i);
+      } else {
+        delMap.set(left[i].name, i);
+      }
+    }
+  }
+
+  let addMap = new Map<string, number>();
+  let rightMap = new Map<string, number>();
+  for (let i = 0; i < right.length; i++) {
+    if (right[i].hasOwnProperty("name")) {
+      if (_.includes(compares.same, right[i].name)) {
+        rightMap.set(right[i].name, i);
+      } else {
+        addMap.set(right[i].name, i);
+      }
+    }
+  }
+
+  for (let i = 0; i < compares.del.length; i++) {
+    const element = compares.del[i];
+    let temp = '';
+    if (left[delMap.get(element)].hasOwnProperty('schema')) {
+      temp = left[delMap.get(element)]['schema']['type'];
+    }
+    temp === undefined ? '' : temp;
+    pushChangesWithType(path, method, location, temp, element, del);
+  }
+
+  for (let i = 0; i < compares.add.length; i++) {
+    const element = compares.add[i];
+    let temp = '';
+    if (right[addMap.get(element)].hasOwnProperty('schema')) {
+      temp = right[addMap.get(element)]['schema']['type'];
+    }
+    temp === undefined ? '' : temp;
+    pushChangesWithType(path, method, location, temp, element, add);
+  }
+
+
+
+  for (let i = 0; i < compares.same.length; i++) {
+    const element = compares.same[i];
+    compareParameter(path, method, location, element,
+      left[leftMap.get(element)], right[rightMap.get(element)],
+      ignore, add, del, change);
+  }
+
 }
 
 function compareParameter(path: string, method: string, location: string, key: string,
@@ -151,6 +198,20 @@ function compareParameter(path: string, method: string, location: string, key: s
   ignore: string[], add: any[], del: any[], change: any[]) {
   let keys = compareValues(Object.keys(left), Object.keys(right));
   let sameKeys = _.difference(keys.same, ignore);
+
+
+  // let leftSchemaType = undefined;
+  // if (left.hasOwnProperty('schema')) {
+  //   leftSchemaType = left['schema']['type'];
+  // }
+  // leftSchemaType === undefined ? '' : leftSchemaType;
+
+  // let rightSchemaType = undefined;
+  // if (right.hasOwnProperty('schema')) {
+  //   rightSchemaType = right['schema']['type'];
+  // }
+  // rightSchemaType === undefined ? '' : rightSchemaType;
+
   for (let i = 0; i < sameKeys.length; i++) {
     const element = sameKeys[i];
     if (element == 'in' || element == 'description' || element == 'required'
@@ -158,7 +219,7 @@ function compareParameter(path: string, method: string, location: string, key: s
       compareString(path, location, key, element, left[element], right[element], change, method);
     }
     else if (element == 'schema') {
-      compareSchema(path, method, location + '/' + element, element, left[element], right[element], ignore, add, del, change);
+      compareSchema(path, method, location + '/' + element, key, left[element], right[element], ignore, add, del, change);
     }
   }
 
@@ -238,7 +299,7 @@ function compareSchema(path: string, method: string, location: string, key: stri
   for (let i = 0; i < sameKeys.length; i++) {
     const element = sameKeys[i];
     if (element == 'type') {
-      compareArrayString(path, location, 'schema', element, left[element], right[element], add, del, change, method);
+      compareArrayString(path, location, key, element, left[element], right[element], add, del, change, method);
     }
     else if (element == 'oneOf' || element == 'allOf' || element == 'anyOf' || element == 'not') {
       compareSchemas(path, method, location + '/' + element, element, left[element], right[element], ignore, add, del, change);
@@ -354,13 +415,13 @@ function compareProperty(path: string, method: string, location: string, key: st
     }
   }
 
-  pushPropertyChanges(path, method, location, _.differenceWith(keys.add,'properties',_.isEqual), right, add);
-  pushPropertyChanges(path, method, location, _.differenceWith(keys.add,'properties',_.isEqual), left, del);
+  pushPropertyChanges(path, method, location, _.differenceWith(keys.add, 'properties', _.isEqual), right, add);
+  pushPropertyChanges(path, method, location, _.differenceWith(keys.add, 'properties', _.isEqual), left, del);
   if (_.includes(keys.add, 'properties')) {
     pushPropertyChanges(path, method, location + '/' + key + '/properties', Object.keys(right.properties), right.properties, add);
   }
   if (_.includes(keys.del, 'properties')) {
-    pushPropertyChanges(path, method,  location + '/' + key + '/properties', Object.keys(left.properties), left.properties, add);
+    pushPropertyChanges(path, method, location + '/' + key + '/properties', Object.keys(left.properties), left.properties, add);
   }
 }
 

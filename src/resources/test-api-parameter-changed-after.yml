@@ -1,0 +1,1293 @@
+info:
+  description: |
+    Service Platform Public API
+  license:
+    name: Copyright © 2020 Trend Micro Incorporated. All rights reserved.
+    url: 'https://www.trendmicro.com'
+  title: Service Platform Public API
+  version: 2.0.0
+openapi: 3.0.1
+servers:
+  - url: 'https://api.xdr.trendmicro.com'
+    description: US PROD server
+  - url: 'https://api.eu.xdr.trendmicro.com'
+    description: EU PROD server
+  - url: 'https://api.sg.xdr.trendmicro.com'
+    description: SG PROD server
+  - url: 'https://api.xdr.trendmicro.co.jp'
+    description: JP PROD server
+components:
+  schemas:
+    SAEWorkbenchDetails:
+      type: object
+      properties:
+        info:
+          type: object
+          description: |
+            * 3002000: Get workbench details successfully.
+          properties:
+            code:
+              description: code
+              type: integer
+              example: 3002000
+              enum:
+                - 3002000
+            msg:
+              type: string
+              example: Get workbench details successfully.
+        data:
+          type: object
+          properties:
+            schemaVersion:
+              type: string
+              description: Schema version
+              example: '1.0'
+            workbenchId:
+              type: string
+              description: Workbench ID
+              example: WB-9002-20200427-0002
+            workbenchLink:
+              type: string
+              description: Workbench URL
+              example: 'https://THE_WORKBENCH_URL'
+            alertProvider:
+              type: string
+              description: null
+              example: SAE
+            model:
+              type: string
+              description: SAE alert model
+              example: Possible APT Attack
+            description:
+              type: string
+              description: Suspicious attack description
+              example: Suspicious email followed by a possible backdoor implantation
+            score:
+              type: string
+              description: Suspicious attack score
+              example: '63'
+            modelSeverity:
+              type: string
+              description: 'Could be low, medium, high or critical'
+              example: critical
+            impactScope:
+              type: array
+              description: The entity that was impacted
+              items:
+                type: object
+                properties:
+                  entityType:
+                    type: string
+                    description: 'Could be host, account or email address'
+                    example: host
+                  entityValue:
+                    oneOf:
+                      - type: string
+                        example: loki@jaguartm.onmicrosoft.com
+                      - type: object
+                        properties:
+                          name:
+                            type: string
+                            example: CODERED\\bonus-PC
+                          ips:
+                            type: array
+                            items:
+                              type: string
+                              example: 10.110.2.1
+                          guid:
+                            type: string
+                            example: 5257b401-2fd7-469c-94fa-39a4f11eb925
+                    example:
+                      name: CODERED\\bonus-PC
+                      ips:
+                        - 10.110.2.1
+                        - 10.112.87.0
+                      guid: 5257b401-2fd7-469c-94fa-39a4f11eb925
+                  entityId:
+                    type: string
+                    example: 5257b401-2fd7-469c-94fa-39a4f11eb925
+                  relatedEntities:
+                    type: array
+                    items:
+                      type: string
+                      example: CODERED\\loki
+                  relatedIndicators:
+                    type: array
+                    items:
+                      type: integer
+                      example: 1
+            indicators:
+              type: array
+              description: >-
+                The indicators refer to those objects which are found by RCA or
+                sweeping
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  objectType:
+                    type: string
+                    example: url
+                  objectValue:
+                    type: string
+                    example: 'http://www.DVftYKDtEi.com/ds7002.zip'
+                  relatedEntities:
+                    type: array
+                    items:
+                      type: string
+                      example: loki@jaguartm.onmicrosoft.com
+                  filterId:
+                    type: array
+                    items:
+                      type: string
+                      example: f862df72-7f5e-4b2b-9f7f-9148e875f908
+            matchedRules:
+              type: array
+              description: The rules are triggered
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: 5f52d1f1-53e7-411a-b74f-745ee81fa30b
+                  name:
+                    type: string
+                    example: Possible SpearPhishing Email
+                  matchedFilters:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: ccf86fc1-688f-4131-a46f-1d7a6ee2f88e
+                        name:
+                          type: string
+                          example: (T1192) Spearphishing Link
+                        timestamp:
+                          type: string
+                          example: '2019-08-02T04:00:01.000Z'
+                        mitreTechniques:
+                          type: array
+                          items:
+                            type: string
+                            example: T1192
+            alertTriggerTimestamp:
+              type: string
+              example: '2020-04-30T00:01:15.000Z'
+            workbenchCompleteTimestamp:
+              type: string
+              example: '2030-04-30T00:01:16.000Z'
+    TIWorkbenchDetails:
+      type: object
+      properties:
+        info:
+          type: object
+          description: |
+            * 3002000: Get workbench details successfully.
+          properties:
+            code:
+              description: code
+              type: integer
+              example: 3002000
+              enum:
+                - 3002000
+            msg:
+              type: string
+              example: Get workbench details successfully.
+        data:
+          type: object
+          properties:
+            schemaVersion:
+              type: string
+              description: Schema version
+              example: '1.1'
+            workbenchId:
+              type: string
+              description: Workbench ID
+              example: WB-9002-20200427-0002
+            workbenchLink:
+              type: string
+              description: Workbench URL
+              example: >-
+                https://portal-int.visionone.trendmicro.com/index.html#/workbench?workbenchId=WB-9002-20200427-0002
+            alertProvider:
+              type: string
+              description: null
+              example: TI
+            model:
+              type: string
+              description: TI alert model
+              example: >-
+                Desktop, Mobile Phishing Campaign Targets South Korean Websites,
+                Steals Credentials Via Watering Hole
+            score:
+              type: string
+              description: Suspicious attack score
+              example: 63
+            campaign:
+              type: string
+              description: 'If this field has no value, it will show n/a here'
+              example: Soula
+            industry:
+              type: string
+              description: 'If this field has no value, it will show n/a here'
+              example: n/a
+            region/country:
+              type: string
+              description: 'If this field has no value, it will show n/a here'
+              example: eastern-asia/Korea (the Republic of)
+            modelSeverity:
+              type: string
+              description: 'Could be low, medium, high or critical'
+              example: critical
+            createdBy:
+              type: string
+              description: null
+              example: Trend Micro Research
+            totalIndicatorNumber:
+              type: integer
+              description: null
+              example: 6
+            matchedIndicatorNumber:
+              type: integer
+              description: null
+              example: 2
+            reportLink:
+              type: string
+              description: null
+              example: 'https://THE_WORKBENCH_URL'
+            impactScope:
+              type: array
+              description: The entity that was impacted
+              items:
+                type: object
+                properties:
+                  entityType:
+                    type: string
+                    description: It can only be a host now
+                    example: host
+                  entityValue:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: CODERED\\bonus-PC
+                      ips:
+                        type: array
+                        items:
+                          type: string
+                          example: 10.110.2.1
+                      guid:
+                        type: string
+                        example: 5257b401-2fd7-469c-94fa-39a4f11eb925
+                    example:
+                      name: CODERED\\bonus-PC
+                      ips:
+                        - 10.110.2.1
+                        - 10.112.87.0
+                      guid: 5257b401-2fd7-469c-94fa-39a4f11eb925
+                  entityId:
+                    type: string
+                    example: 5257b401-2fd7-469c-94fa-39a4f11eb925
+                  relatedEntities:
+                    type: array
+                    items:
+                      type: string
+                      example: 4257b401-2fd7-469c-94fa-39a4f11eb925
+                  relatedIndicators:
+                    type: array
+                    items:
+                      type: integer
+                      example: 1
+            indicators:
+              type: array
+              description: >-
+                The indicators refer to those objects which are found by RCA or
+                sweeping
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  objectType:
+                    type: string
+                    example: url
+                  objectValue:
+                    type: string
+                    example: 'http://www.DVftYKDtEi.com/ds7002.zip'
+                  relatedEntities:
+                    type: array
+                    items:
+                      type: string
+                      example: 5257b401-2fd7-469c-94fa-39a4f11eb925
+                  matchedIndicatorPatterns:
+                    type: array
+                    items:
+                      type: string
+                      example: 74f7eb0f-1ca3-491a-b4cf-f4d54c83c87d
+                  firstSeen:
+                    type: array
+                    items:
+                      type: string
+                      example: '2019-06-14T18:25:55.000Z'
+                  lastSeen:
+                    type: array
+                    items:
+                      type: string
+                      example: '2019-06-14T18:25:55.000Z'
+            matchedIndicatorPatterns:
+              type: array
+              description: The matched indicator patterns
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: 74f7eb0f-1ca3-491a-b4cf-f4d54c83c87d
+                  pattern:
+                    type: string
+                    example: >-
+                      [network-traffic:dst_ref.type = 'domain-name' AND
+                      network-traffic:dst_ref.value = 'oauth20.xyz']
+                  tags:
+                    type: array
+                    items:
+                      type: string
+                      example: STIX2.malicious-activity
+                  matchedLogs:
+                    type: array
+                    items:
+                      type: string
+                      example: Lengthy log string
+            alertTriggerTimestamp:
+              type: string
+              example: '2020-04-30T00:01:15.000Z'
+            workbenchCompleteTimestamp:
+              type: string
+              example: '2030-04-30T00:01:16.000Z'
+    Error:
+      description: task error info
+      type: object
+      required:
+        - code
+        - message
+        - innererror
+      properties:
+        code:
+          type: string
+          description: error class
+          example: InternalError
+        number:
+          type: integer
+          description: internal detail error code
+          example: 4000102
+        message:
+          type: string
+          description: detail error message
+          example: DB error.
+        innererror:
+          type: object
+          properties:
+            code:
+              type: string
+              description: error sub class
+              example: ExecInternalError
+            innererror:
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: error code
+                  example: DBExecError
+                service:
+                  type: string
+                  description: internal error module name
+                  example: arp
+    400_Response:
+      type: object
+      description: Bad argument
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - innererror
+          properties:
+            code:
+              type: string
+              enum:
+                - BadArgument
+            message:
+              type: string
+              example: Product not connected
+            innererror:
+              type: object
+              required:
+                - code
+                - innererror
+              properties:
+                code:
+                  type: string
+                innererror:
+                  type: object
+                  required:
+                    - code
+                  properties:
+                    code:
+                      type: string
+                      description: error code
+                    service:
+                      type: string
+                      description: internal error module name
+                      example: svp
+    401_Response:
+      type: object
+      description: Unauthorized
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - innererror
+          properties:
+            code:
+              type: string
+              enum:
+                - Unauthorized
+            message:
+              type: string
+              example: The token expires
+            innererror:
+              type: object
+              required:
+                - code
+                - innererror
+              properties:
+                code:
+                  type: string
+                innererror:
+                  type: object
+                  required:
+                    - code
+                  properties:
+                    code:
+                      type: string
+                      description: error code
+                    service:
+                      type: string
+                      description: internal error module name
+                      example: svp
+    403_Response:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          description: error info
+          type: object
+          required:
+            - code
+            - message
+            - innererror
+          properties:
+            code:
+              type: string
+              description: error class
+              enum:
+                - PermissionDeny
+            message:
+              type: string
+              description: detail error message
+              example: Role denied
+            innererror:
+              type: object
+              required:
+                - code
+                - innererror
+              properties:
+                code:
+                  type: string
+                innererror:
+                  type: object
+                  required:
+                    - code
+                  properties:
+                    code:
+                      type: string
+                      description: error code
+                    service:
+                      type: string
+                      description: internal error module name
+                      example: svp
+    404_Response:
+      type: object
+      description: NotFound
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - innererror
+          properties:
+            code:
+              type: string
+              enum:
+                - NotFound
+            message:
+              type: string
+              example: Not found
+            innererror:
+              type: object
+              required:
+                - code
+                - innererror
+              properties:
+                code:
+                  type: string
+                innererror:
+                  type: object
+                  required:
+                    - code
+                  properties:
+                    code:
+                      type: string
+                      description: error code
+                    service:
+                      type: string
+                      description: internal error module name
+                      example: svp
+    429_Response:
+      type: object
+      description: Too many request
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - innererror
+          properties:
+            code:
+              type: string
+              example:
+                - TooManyRequest
+            message:
+              type: string
+              example: Too many request
+            innererror:
+              type: object
+              required:
+                - code
+                - innererror
+              properties:
+                code:
+                  type: string
+                innererror:
+                  type: object
+                  required:
+                    - code
+                  properties:
+                    code:
+                      type: string
+                      description: error code
+                    service:
+                      type: string
+                      description: internal error module name
+                      example: svp
+    500_Response:
+      type: object
+      description: Internal error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - innererror
+          properties:
+            code:
+              type: string
+              enum:
+                - InternalError
+            message:
+              type: string
+              example: Internal processs timeout
+            innererror:
+              type: object
+              required:
+                - code
+                - innererror
+              properties:
+                code:
+                  type: string
+                innererror:
+                  type: object
+                  required:
+                    - code
+                  properties:
+                    code:
+                      type: string
+                      description: error code
+                    service:
+                      type: string
+                      description: internal error module name
+                      example: svp
+  examples:
+    saeWorkbenchDetailsExample:
+      value:
+        info:
+          code: 3002000
+          msg: Get workbench details successfully.
+        data:
+          schemaVersion: '1.0'
+          workbenchId: WB-9002-20200427-0002
+          workbenchLink: 'https://THE_WORKBENCH_URL'
+          alertProvider: SAE
+          model: Possible APT Attack
+          description: Suspicious email followed by a possible backdoor implantation
+          score: '63'
+          modelSeverity: critical
+          alertTriggerTimestamp: '2020-04-30T00:01:15.000Z'
+          workbenchCompleteTimestamp: '2030-04-30T00:01:16.000Z'
+          impactScope:
+            - entityType: emailAddress
+              entityValue: loki@jaguartm.onmicrosoft.com
+              entityId: loki@jaguartm.onmicrosoft.com
+              relatedEntities:
+                - CODERED\\loki
+              relatedIndicators:
+                - 1
+          indicators:
+            - id: 1
+              objectType: url
+              objectValue: 'http://www.DVftYKDtEi.com/ds7002.zip'
+              relatedEntities:
+                - loki@jaguartm.onmicrosoft.com
+              filterId:
+                - f862df72-7f5e-4b2b-9f7f-9148e875f908
+          matchedRules:
+            - id: 5f52d1f1-53e7-411a-b74f-745ee81fa30b
+              name: Possible SpearPhishing Email
+              matchedFilters:
+                - id: ccf86fc1-688f-4131-a46f-1d7a6ee2f88e
+                  name: (T1192) Spearphishing Link
+                  timestamp: '2019-08-02T04:00:01.000Z'
+                  mitreTechniques:
+                    - T1192
+      summary: SAE workbench details
+    tiWorkbenchDetailsExample:
+      value:
+        info:
+          code: 3002000
+          msg: Get workbench details successfully.
+        data:
+          schemaVersion: '1.1'
+          workbenchId: WB-9002-20200427-0002
+          workbenchLink: >-
+            https://portal-int.visionone.trendmicro.com/index.html#/workbench?workbenchId=WB-9002-20200427-0002
+          alertProvider: TI
+          model: >-
+            Desktop, Mobile Phishing Campaign Targets South Korean Websites,
+            Steals Credentials Via Watering Hole
+          campaign: Soula
+          industry: n/a
+          region/country: eastern-asia/Korea (the Republic of)
+          createdBy: Trend Micro Research
+          totalIndicatorNumber: 6
+          matchedIndicatorNumber: 2
+          reportLink: 'https://THE_WORKBENCH_URL'
+          score: '63'
+          modelSeverity: critical
+          alertTriggerTimestamp: '2020-04-30T00:01:15.000Z'
+          workbenchCompleteTimestamp: '2030-04-30T00:01:16.000Z'
+          impactScope:
+            - entityType: host
+              entityValue:
+                name: CODERED\\bonus-PC
+                ips:
+                  - 10.110.2.1
+                guid: 5257b401-2fd7-469c-94fa-39a4f11eb925
+              entityId: 5257b401-2fd7-469c-94fa-39a4f11eb925
+              relatedEntities:
+                - 4257b401-2fd7-469c-94fa-39a4f11eb925
+              relatedIndicators:
+                - 1
+          indicators:
+            - id: 1
+              objectType: url
+              objectValue: 'http://www.DVftYKDtEi.com/ds7002.zip'
+              relatedEntities:
+                - 5257b401-2fd7-469c-94fa-39a4f11eb925
+              matchedIndicatorPatterns:
+                - 74f7eb0f-1ca3-491a-b4cf-f4d54c83c87d
+              firstSeen:
+                - '2019-06-14T18:25:55.000Z'
+              lastSeen:
+                - '2019-06-14T18:25:55.000Z'
+          matchedIndicatorPatterns:
+            - id: 74f7eb0f-1ca3-491a-b4cf-f4d54c83c87d
+              pattern: >-
+                [network-traffic:dst_ref.type = 'domain-name' AND
+                network-traffic:dst_ref.value = 'oauth20.xyz']
+              tags:
+                - STIX2.malicious-activity
+              matchedLogs:
+                - Lengthy log string
+      summary: TI workbench details
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+tags:
+  - name: Accounts
+  - name: Alerts
+  - name: API Authentication Token
+  - name: Audit Logs
+  - name: Connected Products
+  - name: Details
+  - name: Detection Models
+  - name: Email
+  - name: Endpoint
+  - name: General
+  - name: Notifications
+  - name: On-premises
+  - name: Password
+  - name: Remote Support
+  - name: Roles
+  - name: SaaS
+  - name: SAML
+  - name: Search
+  - name: Splunk
+  - name: Sweeping
+  - name: Threat Intelligence
+  - name: Two-factor Authentication
+x-tagGroups:
+  - name: Accounts
+    tags:
+      - Accounts
+      - API Authentication Token
+      - Password
+      - Roles
+      - Two-factor Authentication
+  - name: Alerts / Workbench
+    tags:
+      - Alerts
+      - Details
+      - Detection Models
+      - Threat Intelligence
+  - name: Audit Logs
+    tags:
+      - Audit Logs
+  - name: Connected Products
+    tags:
+      - General
+      - On-premises
+      - SaaS
+  - name: Notifications
+    tags:
+      - Notifications
+  - name: Remote Support
+    tags:
+      - Remote Support
+  - name: Response Actions
+    tags:
+      - Common
+      - Email
+      - Endpoint
+  - name: Single Sign-On
+    tags:
+      - SAML
+  - name: Search
+    tags:
+      - Search
+      - Sweeping
+  - name: SIEM
+    tags:
+      - Splunk
+paths:
+  '/v1.0/xdr/workbench/workbenches/{workbenchId2}':
+    get: &ref_0
+      summary: Get alert details
+      description: Retrieves information about the specified alert
+      tags:
+        - Details
+      parameters:
+        - name: workbenchId2
+          description: workbench id
+          example: WB-14-20190709-0003
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          headers: []
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/SAEWorkbenchDetails'
+                  - $ref: '#/components/schemas/TIWorkbenchDetails'
+                discriminator:
+                  propertyName: alertProvider
+                  mapping:
+                    SAE: '#/components/schemas/SAEWorkbenchDetails'
+                    TI: '#/components/schemas/TIWorkbenchDetails'
+              examples:
+                saeWorkbenchDetailsExample:
+                  $ref: '#/components/examples/saeWorkbenchDetailsExample'
+                tiWorkbenchDetailsExample:
+                  $ref: '#/components/examples/tiWorkbenchDetailsExample'
+        '400':
+          headers: []
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: object
+                    description: >
+                      * 3002001: Unable to retrieve workbench details. Verify
+                      that the request is properly formatted and try again.
+                      (Error code: 3002001)
+
+                      * 3002002: Unable to retrieve workbench details. Verify
+                      that the specified customer ID exists and that you have
+                      permission to access the customer's data and try again.
+                      (Error code: 3002002)
+
+                      * 3002003: Unable to retrieve workbench details. Verify
+                      that the specified workbench ID exists and that you have
+                      permission to access the workbench and try again. (Error
+                      code: 3002003)
+
+                      * 3002005: Unable to retrieve workbench details. This
+                      workbench version is unsupported for workbench details.
+                      (Error code: 3002005)
+                    properties:
+                      code:
+                        type: string
+                        example: '3002001'
+                        enum:
+                          - '3002001'
+                          - '3002002'
+                          - '3002003'
+                          - '3002005'
+                      message:
+                        type: string
+                        example: >-
+                          Unable to retrieve workbench details. Verify that the
+                          request is properly formatted and try again. (Error
+                          code: 3002001)
+                      innererror:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            example: ''
+        '500':
+          headers: []
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: object
+                    description: >
+                      * 3002999: Unable to retrieve workbench details. An
+                      internal error has occurred. Please try again later. If
+                      the issue persists, contact Trend Micro Support. (Error
+                      code: 3002999)
+                    properties:
+                      code:
+                        type: string
+                        example: '3002999'
+                        enum:
+                          - '3002999'
+                      message:
+                        type: string
+                        example: >-
+                          Unable to retrieve workbench details. An internal
+                          error has occurred. Please try again later. If the
+                          issue persists, contact Trend Micro Support. (Error
+                          code: 3002999)
+                      innererror:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            example: ''
+    put: &ref_1
+      summary: Edit alert status
+      description: Modifies the investigation status of the specified alert
+      tags:
+        - Alerts
+      parameters:
+        - name: workbenchId
+          description: workbench id
+          example: WB-14-20190709-0003
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              example:
+                investigationStatus: 1
+              type: object
+              properties:
+                investigationStatus:
+                  type: integer
+                  description: >-
+                    0: New, 1: In Progress, 2: Resolved: True Positive, 3:
+                    Resolved: False Positive
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  info:
+                    description: |
+                      * 3006000 - Alert status changed successfully.
+                    type: object
+                    properties:
+                      code:
+                        description: code
+                        type: integer
+                        example: 3006000
+                        enum:
+                          - 3006000
+                      msg:
+                        description: msg
+                        type: string
+                        example: Alert status changed successfully.
+                  data:
+                    type: null
+                    example: null
+        '400':
+          headers: []
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: object
+                    description: >
+                      * 3006001 - Unable to change alert status. Verify that the
+                      request is properly formatted and try again. (Error code:
+                      3006001)
+
+                      * 3006002 - Unable to change alert status. Verify that the
+                      specified company exists and that you have permission to
+                      access the company's data and try again. (Error code:
+                      3006002)
+
+                      * 3006003 - Unable to change alert status. Verify that all
+                      requested workbench IDs exist and try again. (Error code:
+                      3006003)
+                    properties:
+                      code:
+                        type: string
+                        example: '3006001'
+                        enum:
+                          - '3006001'
+                          - '3006002'
+                          - '3006003'
+                      message:
+                        type: string
+                        example: >-
+                          Unable to change alert status. Verify that the request
+                          is properly formatted and try again. (Error code:
+                          3006001)
+                      innererror:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            example: ''
+        '500':
+          headers: []
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: object
+                    description: >
+                      * 3006999 - Unable to change alert status. An internal
+                      error has occurred. Please try again later. If the issue
+                      persists, contact your support provider. (Error code:
+                      3006999)
+                    properties:
+                      code:
+                        type: string
+                        example: '3006999'
+                        enum:
+                          - '3006999'
+                      message:
+                        type: string
+                        example: >-
+                          Unable to change alert status. An internal error has
+                          occurred. Please try again later. If the issue
+                          persists, contact your support provider. (Error code:
+                          3006999)
+                      innererror:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            example: ''
+  '/v1.0/xdr/workbench/{email}/workbenches/{workbenchId2}':
+    get: &ref_0
+      summary: Get alert details
+      description: Retrieves information about the specified alert
+      tags:
+        - Details
+      parameters:
+        - name: workbenchId2
+          description: workbench id
+          example: WB-14-20190709-0003
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          headers: []
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/SAEWorkbenchDetails'
+                  - $ref: '#/components/schemas/TIWorkbenchDetails'
+                discriminator:
+                  propertyName: alertProvider
+                  mapping:
+                    SAE: '#/components/schemas/SAEWorkbenchDetails'
+                    TI: '#/components/schemas/TIWorkbenchDetails'
+              examples:
+                saeWorkbenchDetailsExample:
+                  $ref: '#/components/examples/saeWorkbenchDetailsExample'
+                tiWorkbenchDetailsExample:
+                  $ref: '#/components/examples/tiWorkbenchDetailsExample'
+        '400':
+          headers: []
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: object
+                    description: >
+                      * 3002001: Unable to retrieve workbench details. Verify
+                      that the request is properly formatted and try again.
+                      (Error code: 3002001)
+
+                      * 3002002: Unable to retrieve workbench details. Verify
+                      that the specified customer ID exists and that you have
+                      permission to access the customer's data and try again.
+                      (Error code: 3002002)
+
+                      * 3002003: Unable to retrieve workbench details. Verify
+                      that the specified workbench ID exists and that you have
+                      permission to access the workbench and try again. (Error
+                      code: 3002003)
+
+                      * 3002005: Unable to retrieve workbench details. This
+                      workbench version is unsupported for workbench details.
+                      (Error code: 3002005)
+                    properties:
+                      code:
+                        type: string
+                        example: '3002001'
+                        enum:
+                          - '3002001'
+                          - '3002002'
+                          - '3002003'
+                          - '3002005'
+                      message:
+                        type: string
+                        example: >-
+                          Unable to retrieve workbench details. Verify that the
+                          request is properly formatted and try again. (Error
+                          code: 3002001)
+                      innererror:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            example: ''
+        '500':
+          headers: []
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: object
+                    description: >
+                      * 3002999: Unable to retrieve workbench details. An
+                      internal error has occurred. Please try again later. If
+                      the issue persists, contact Trend Micro Support. (Error
+                      code: 3002999)
+                    properties:
+                      code:
+                        type: string
+                        example: '3002999'
+                        enum:
+                          - '3002999'
+                      message:
+                        type: string
+                        example: >-
+                          Unable to retrieve workbench details. An internal
+                          error has occurred. Please try again later. If the
+                          issue persists, contact Trend Micro Support. (Error
+                          code: 3002999)
+                      innererror:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            example: ''
+    put: &ref_1
+      summary: Edit alert status
+      description: Modifies the investigation status of the specified alert
+      tags:
+        - Alerts
+      parameters:
+        - name: workbenchId
+          description: workbench id
+          example: WB-14-20190709-0003
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              example:
+                investigationStatus: 1
+              type: object
+              properties:
+                investigationStatus:
+                  type: integer
+                  description: >-
+                    0: New, 1: In Progress, 2: Resolved: True Positive, 3:
+                    Resolved: False Positive
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  info:
+                    description: |
+                      * 3006000 - Alert status changed successfully.
+                    type: object
+                    properties:
+                      code:
+                        description: code
+                        type: integer
+                        example: 3006000
+                        enum:
+                          - 3006000
+                      msg:
+                        description: msg
+                        type: string
+                        example: Alert status changed successfully.
+                  data:
+                    type: null
+                    example: null
+        '400':
+          headers: []
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: object
+                    description: >
+                      * 3006001 - Unable to change alert status. Verify that the
+                      request is properly formatted and try again. (Error code:
+                      3006001)
+
+                      * 3006002 - Unable to change alert status. Verify that the
+                      specified company exists and that you have permission to
+                      access the company's data and try again. (Error code:
+                      3006002)
+
+                      * 3006003 - Unable to change alert status. Verify that all
+                      requested workbench IDs exist and try again. (Error code:
+                      3006003)
+                    properties:
+                      code:
+                        type: string
+                        example: '3006001'
+                        enum:
+                          - '3006001'
+                          - '3006002'
+                          - '3006003'
+                      message:
+                        type: string
+                        example: >-
+                          Unable to change alert status. Verify that the request
+                          is properly formatted and try again. (Error code:
+                          3006001)
+                      innererror:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            example: ''
+        '500':
+          headers: []
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: object
+                    description: >
+                      * 3006999 - Unable to change alert status. An internal
+                      error has occurred. Please try again later. If the issue
+                      persists, contact your support provider. (Error code:
+                      3006999)
+                    properties:
+                      code:
+                        type: string
+                        example: '3006999'
+                        enum:
+                          - '3006999'
+                      message:
+                        type: string
+                        example: >-
+                          Unable to change alert status. An internal error has
+                          occurred. Please try again later. If the issue
+                          persists, contact your support provider. (Error code:
+                          3006999)
+                      innererror:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            example: ''
