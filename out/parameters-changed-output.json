@@ -1,7 +1,7 @@
 {
 	"add": [
 		{
-			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}",
+			"path": "undefined",
 			"method": "get",
 			"location": "/parameters",
 			"change": {
@@ -10,7 +10,7 @@
 			}
 		},
 		{
-			"path": "/beta/xdr/workbench/workbenches/{workbenchId}",
+			"path": "undefined",
 			"method": "get",
 			"location": "/parameters",
 			"change": {
@@ -22,7 +22,7 @@
 	"del": [],
 	"change": [
 		{
-			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}",
+			"path": "undefined",
 			"method": "get",
 			"location": "/parameters",
 			"change": {
@@ -33,7 +33,7 @@
 			}
 		},
 		{
-			"path": "/v1.0/xdr/workbench/workbenches/{workbenchId}",
+			"path": "undefined",
 			"method": "get",
 			"location": "/parameters/schema",
 			"change": {
@@ -44,7 +44,7 @@
 			}
 		},
 		{
-			"path": "/beta/xdr/workbench/workbenches/{workbenchId}",
+			"path": "undefined",
 			"method": "get",
 			"location": "/parameters",
 			"change": {
@@ -55,7 +55,7 @@
 			}
 		},
 		{
-			"path": "/beta/xdr/workbench/workbenches/{workbenchId}",
+			"path": "undefined",
 			"method": "get",
 			"location": "/parameters/schema",
 			"change": {

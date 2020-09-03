@@ -31,42 +31,17 @@ function comparePaths(path: string,
   ignore: any[], add: any[], del: any[], change: any[]) {
   let rawLeftKeys = Object.keys(left);
   let rawRightKeys = Object.keys(right);
-  let leftKeys = new Array(); let rightKeys = new Array();
-  for (let i = 0; i < rawLeftKeys.length; i++) {
-    const element = rawLeftKeys[i];
-    let temp = removeParameters(element);
-    leftApiMap.set(temp, element);
-    leftKeys.push(temp);
-  }
-  for (let i = 0; i < rawRightKeys.length; i++) {
-    const element = rawRightKeys[i];
-    let temp = removeParameters(element);
-    rightApiMap.set(temp, element);
-    rightKeys.push(temp);
-  }
-  let keys = compareValues(leftKeys, rightKeys);
-  let sameApi = keys.same;
+  let keys = compareValues(rawLeftKeys, rawRightKeys);
+  let sameApi = _.difference(keys.same, ignore);
 
   for (let i = 0; i < sameApi.length; i++) {
     const element = sameApi[i];
     compareMethods(path + rightApiMap.get(element),
-      left[leftApiMap.get(element)], right[rightApiMap.get(element)],
+      left[element], right[element],
       pathItemObjectIgnore, add, del, change);
   }
-  //FIXME
-  let addKeys = new Array();
-  let delKeys = new Array();
-  for (let i = 0; i < keys.add.length; i++) {
-    const element = keys.add[i];
-    addKeys.push(rightApiMap.get(element));
-  }
-
-  for (let i = 0; i < keys.del.length; i++) {
-    const element = keys.del[i];
-    delKeys.push(leftApiMap.get(element));
-  }
-  pushChanges(path, '', '', 'paths', addKeys, add);
-  pushChanges(path, '', '', 'paths', delKeys, del);
+  pushChanges(path, '', '', 'paths', keys.add, add);
+  pushChanges(path, '', '', 'paths', keys.del, del);
 }
 
 function compareMethods(path: string,
